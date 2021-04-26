@@ -135,9 +135,9 @@ class PointNetfeat(nn.Module):
     def forward(self, x):
         n_pts = x.size()[2]
         trans = self.stn(x)
-        x = x.transpose(2, 1)
-        x = torch.bmm(x, trans)
-        x = x.transpose(2, 1)
+        #x = x.transpose(2, 1)
+        #x = torch.bmm(x, trans)
+        #x = x.transpose(2, 1)
         x = self.relu(self.conv1(x))
 
         if self.feature_transform:
@@ -150,7 +150,7 @@ class PointNetfeat(nn.Module):
 
         pointfeat = x
         x = self.relu(self.conv2(x))
-        x = self.conv3(x)
+        x = self.relu(self.conv3(x))
         x = torch.max(x, 2, keepdim=True)[0]
         x = x.view(-1, 1024)
         if self.global_feat:
@@ -161,7 +161,7 @@ class PointNetfeat(nn.Module):
 
 
 class PointNetCls(nn.Module):
-    def __init__(self, k=2, feature_transform=False, use_bn=True):
+    def __init__(self, k=2, feature_transform=False, use_bn=False):
         super(PointNetCls, self).__init__()
         self.feature_transform = feature_transform
         self.feat = PointNetfeat(
