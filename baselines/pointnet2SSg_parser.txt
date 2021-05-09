@@ -1,0 +1,58 @@
+xyz [4, 3, 1024], points none
+sa1
+transpose   xyz[4, 1024, 3]     points none
+sampling    xyz_idx[4, 512],    pts_idx[4, 512, 32]   #saved for backprop usage
+            xyz[4, 512, 3],     points[4, 512, 32, 3]
+subtract    xyz[4, 512, 3],     points =  points - xyz.unsqueeze(-2)
+transpose   xyz[4, 3, 512],     points[4, 3, 32, 512]
+Conv2d(3, 64, 1)                points[4, 64, 32, 512]
+Bn2d                            points[4, 64, 32, 512]
+Relu()                          points[4, 64, 32, 512]
+Conv2d(64, 64, 1)               points[4, 64, 32, 512]
+Bn2d                            points[4, 64, 32, 512]
+Relu()                          points[4, 64, 32, 512]
+Conv2d(64, 128, 1)              points[4, 128, 32, 512]
+Bn2d                            points[4, 128, 32, 512]
+Relu()                          points[4, 128, 32, 512]
+Max         xyz[4, 3, 512]      points[4, 128, 512]
+
+sa2
+
+transpose   xyz[4, 512, 3]      points [4, 512, 128]
+sampling    xyz_idx[4, 128],    pts_idx[4, 126, 64]   #saved for backprop usage
+            xyz[4, 128, 3],     points[4, 128, 64, 128]
+subtract    xyz[4, 128, 3],     g_xyz[4, 128, 64, 3]
+transpose   xyz[4, 3, 128],     points[4, 128, 64, 128]
+cat         xyz[4, 3, 128],     [g_xyz, points] points[4, 128, 64, 131],
+Conv2d(131, 128, 1)             points[4, 128, 64, 128]
+Bn2d                            points[4, 128, 64, 128]
+Relu()                          points[4, 128, 64, 128]
+Conv2d(128, 128, 1)             points[4, 128, 64, 128]
+Bn2d                            points[4, 128, 64, 128]
+Relu()                          points[4, 128, 64, 128]
+Conv2d(128, 256, 1)             points[4, 256, 64, 128]
+Bn2d                            points[4, 256, 64, 128]
+Relu()                          points[4, 256, 64, 128]
+Max         xyz[4, 3, 128]      points[4, 256, 128]
+
+sa3
+
+
+
+
+
+
+
+
+fc1
+bn1
+fc2
+bn2
+fc3
+
+
+
+
+
+
+
