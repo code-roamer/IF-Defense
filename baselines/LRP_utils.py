@@ -97,9 +97,22 @@ def image(X,sx,sy):
 # Clone a layer and pass its parameters through the function g
 # --------------------------------------------------------------
 
-def newlayer(layer,g):
+def newlayer(layer, g, bn=False):
 
     layer = copy.deepcopy(layer)
+
+    if isinstance(layer, nn.Sequential) and bn:
+        bn_weight = layer[1].weight / (layer[1].running_var.sqrt()+1e-9)
+        while len(bn_weight.shape) < len(layer[0].weight.shape):
+            bn_weight = bn_weight.unsqueeze(-1)
+
+        try: layer[0].weight = nn.Parameter(g(layer[0].weight * bn_weight))
+        except AttributeError: pass
+
+        try: layer[0].bias   = nn.Parameter(torch.zeros_like(layer[0].bias))    #g(layer[0].bias))
+        except AttributeError: pass
+
+        return layer[0]
 
     if isinstance(layer, nn.Sequential):
         try: layer[0].weight = nn.Parameter(g(layer[0].weight))
