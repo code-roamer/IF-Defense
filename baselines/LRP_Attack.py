@@ -153,7 +153,7 @@ def AOA_Attack(model, x_adv, label, target):
             # log_loss = (W*R_ori).sum()
             # log_loss = torch.log(R_ori.abs().sum()) - torch.log(R_sec.abs().sum())
             W = 12.5*(0.08 - (x_adv-x_ori).abs())
-            log_loss = -torch.log((W*(R_ori - R_sec).abs()).sum()) - torch.log((x_adv-x_ori).abs().sum())    # + 0.01 * LogitsAdvLoss(0.0)(pred, target).mean()
+            log_loss = -torch.log((W*(R_ori - R_sec).abs()).sum()) - 0.5*torch.log((x_adv-x_ori).abs().sum())    # + 0.01 * LogitsAdvLoss(0.0)(pred, target).mean()
         else:
             log_loss = LogitsAdvLoss(0.0)(pred, target).mean()
             # log_loss = R_sec.sum() #  - R_sec.sum()
